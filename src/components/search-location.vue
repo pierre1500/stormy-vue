@@ -93,7 +93,8 @@ export default {
        return false;
      }
 
-     return true;
+
+      return true;
     },
     search(){
       if(!this.checkQuery()){

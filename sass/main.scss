@@ -3,18 +3,32 @@
 
 @import "~bootstrap";
 
-body
-{
+body {
   color: white;
-  background-color: white;
+  background-color: #4A4A4A;
+}
+
+.user-h {
+  color: white;
+}
+
+.color-a {
+  margin-bottom: 20px;
+  background-color: #4A4A4A;
+  color: white;
+}
+
+.color-a:hover {
+  background-color: #1a1a1a;
+  color: white;
 }
 
 .is-loading-wrapper {
   position: fixed;
-  top:0;
-  right:0;
-  left:0;
-  bottom:0;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
   background: rgba(34, 34, 34, 0.27);
   display: flex;
   justify-content: center;

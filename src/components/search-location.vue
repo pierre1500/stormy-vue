@@ -3,7 +3,7 @@
     <!-- form -->
     <div class="search-wrapper px-2">
       <div class="input-group mb-3">
-        <select class="custom-select"
+        <select class="custom-select bg-dark text-light"
                 v-model="type"
                 id="inputGroupSelect01">
           <option value="housenumber">Numéro maison</option>
@@ -11,16 +11,17 @@
           <option value="locality">Lieu-dit</option>
           <option value="municipality">Commune</option>
         </select>
-        <input type="text" class="form-control"
+        <input class="bg-dark text-light form-control" type="text"
                @keyup.enter="search"
                :disabled="loading"
                v-model="query"
                :placeholder="defaultPlaceholder"
                :aria-label="defaultPlaceholder">
         <div class="input-group-append">
-          <button class="btn btn-outline-secondary"
+          <button class="btn btn-dark btn-outline-light"
                   @click="search"
-                  type="button">Button</button>
+                  type="button">Button
+          </button>
         </div>
       </div>
     </div>
@@ -38,8 +39,8 @@
         <a href="#"
            v-for="opt in results"
            :key="opt.properties.id"
-           class="list-group-item list-group-item-action flex-column align-items-start active">
-          <div class="d-flex w-100 justify-content-between">
+           class="list-group-item list-group-item-action flex-column align-items-start color-a">
+          <div class="d-flex w-100 justify-content-between color-result">
             <h5 class="mb-1">{{ opt.properties.label }}</h5>
             <small>{{ opt.properties.type }}</small>
           </div>
@@ -92,7 +93,6 @@ export default {
      if (this.query === this.lastQuery){
        return false;
      }
-
 
       return true;
     },

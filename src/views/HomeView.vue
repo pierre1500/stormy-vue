@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <h1>Stormy</h1>
     <h1 :class="classUser">Hello {{ username }} {{ titleOfUser }} 🥉</h1>
      <search-location></search-location>
   </div>

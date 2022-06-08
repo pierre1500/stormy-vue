@@ -20,9 +20,14 @@ import router from './router'
 // import customm css
 import "../sass/main.scss";
 
-const vm = createApp(App);
-const options = {};
+import store from './store'
+
+const vm = createApp(App)
+
 
 vm.use(router);
-vm.use(Toast,options);
+vm.use(store);
+
+const options = {};
+vm.use(Toast, options);
 vm.mount('#app');

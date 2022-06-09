@@ -2,7 +2,7 @@ import http from "../http-all";
 
 class NewsService {
     getNews() {
-        return http.get('/feed.rss');
+        return http.get(`/feed.rss`);
     }
 }
 

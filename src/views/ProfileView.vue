@@ -1,18 +1,20 @@
 <template>
-  <div class="LoginView">
+  <div class="ProfileView">
+    <h1>My Profile</h1>
+    <!-- your code here :) -->
     <div class="row justify-content-center">
-      <div class="col-6">
-        <login-form></login-form>
+      <div class="col-12 col-md-6 fx">
+        <profile-editor></profile-editor>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import LoginForm from "@/components/loginForm";
+import ProfileEditor from "@/components/profile-editor";
 
 export default {
-  name: "loginView",
+  name: "ProfileView",
   props: {},
   data() {
     return {
@@ -26,7 +28,7 @@ export default {
   mounted() {
   },
   methods: {},
-  components: {LoginForm},
+  components: {ProfileEditor},
   beforeUnmount() {
   }
 }

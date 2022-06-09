@@ -1,4 +1,5 @@
-import { useToast } from "vue-toastification";
+import {useToast} from "vue-toastification";
+
 export const ToastService = {
     props: {},
     data() {

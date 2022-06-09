@@ -1,23 +1,14 @@
 import {createStore} from 'vuex';
-
-let userStored = window.localStorage.getItem('user_stored');
-if (userStored === null) {
-    userStored = undefined;
-}
-
-let userListStored = window.localStorage.getItem('user_list_stored');
-if (userListStored === null) {
-    userListStored = undefined;
-}
+import UsersService from "@/services/UsersService";
 
 export default createStore({
-    // Store Variables
+    // store variables
     state: {
         newsFeed: undefined,
-        user: userStored,
-        userList: userListStored,
+        user: undefined,
+        userList: undefined,
     },
-    // Get the values
+    // get the values
     getters: {
         getNewsFeed: state => {
             return state.newsFeed;
@@ -25,22 +16,60 @@ export default createStore({
         getUser: state => {
             return state.user;
         },
+        // Kebabcase : get-user-list
+        // Camelcase : getUserList
         getUserList: state => {
             return state.userList;
         },
     },
-    //Change Variables values
+    // change variables values
     mutations: {
         update_newsFeed(state, newNewsFeed) {
-            state.newsFeed = newNewsFeed;
+            state.newsFeed = newNewsFeed
         },
-        update_user(state, newUser) {
-            window.localStorage.setItem('user_stored', newUser);
+        init_user(state, newUser) {
             state.user = newUser;
         },
+        update_user(state, newUser) {
+            //window.localStorage.setItem('user_stored', newUser);
+            state.user = newUser;
+            UsersService.setCurrentUser(state.user)
+                .catch(err => {
+                    console.log('err: ', err);
+                })
+            ;
+        },//*/
+        update_user_entity(state, updatedUser) {
+            let output = [];
+            state.userList.forEach(user => {
+                if (user.getId() !== updatedUser.getId()) {
+                    output.push(user);
+                }
+            });
+            output.push(updatedUser);
+            this.userList = output;
+            UsersService.storeUsersInStorage(state.userList)
+                .catch(err => {
+                    console.log('err: ', err);
+                })
+            ;
+        },//*/
         update_userList(state, newUserList) {
-            window.localStorage.setItem('user_list_stored', newUserList);
+            //window.localStorage.setItem('user_list_stored', newUserList);
             state.userList = newUserList;
+            UsersService.storeUsersInStorage(state.userList)
+                .catch(err => {
+                    console.log('err: ', err);
+                })
+            ;
+        },
+        add_userList(state, newUser) {
+            state.userList.push(newUser);
+            UsersService.storeUsersInStorage(state.userList)
+                .catch(err => {
+                    console.log('err: ', err);
+                })
+            ;
         }
     },
     actions: {},

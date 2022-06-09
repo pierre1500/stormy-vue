@@ -1,13 +1,11 @@
 import {User} from "@/classes/User";
-import LocationsService from "@/services/LocationsService";
 
 class UsersService {
 
-    constructor() {
-        this.locationsService = LocationsService;
-    }
-
     async setCurrentUser(user) {
+        if (user === undefined) {
+            window.localStorage.removeItem('currentUserId');
+        }
         window.localStorage.setItem('currentUserId', user.getId());
     }
 

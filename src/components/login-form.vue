@@ -4,12 +4,16 @@
          class="login-profile-wrapper d-flex justify-content-between flex-wrap">
       <a v-for="profile in userList"
          :key="profile.id"
-         class="login-profilex"
+         class="d-block login-profilex mb-3"
          href="#"
          @click.prevent="loginAs(profile)">
         <div class="profile-image">
-          <img :alt="profile.nickname"
+          <img v-if="profile.profilePicture === undefined"
+               :alt="profile.nickname"
                src="../assets/caravane.png">
+          <img v-else
+               :alt="profile.nickname"
+               :src="profile.profilePicture">
         </div>
         <div class="label-username">
           <span class="label-username-text">

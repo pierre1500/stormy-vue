@@ -1,24 +1,30 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Navbar</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <router-link v-if="currentUser === undefined" :to="{name: 'login'}"
+                   class="navbar-brand">Login
+      </router-link>
+      <router-link v-if="currentUser !== undefined" :to="{name: 'profile'}"
+                   class="navbar-brand">{{ currentUser.nickname }}
+      </router-link>
+
+      <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+              class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div id="navbarSupportedContent" class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <router-link class="nav-link active" to="/">Home</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/about">About</router-link>
           </li>
           <li class="nav-item">
             <router-link :to="{name: 'blog-listing-view'}" class="nav-link">Blog</router-link>
           </li>
           <li class="nav-item">
             <router-link :to="{name: 'login'}" class="nav-link">Login</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/about">About</router-link>
           </li>
         </ul>
       </div>
@@ -36,7 +42,11 @@ export default {
     }
   },
   watch: {},
-  computed: {},
+  computed: {
+    currentUser() {
+      return this.$store.getters.getUser;
+    }
+  },
   created() {
   },
   mounted() {

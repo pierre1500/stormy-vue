@@ -1,6 +1,7 @@
 <template>
   <div class="blog-listing">
-    <div v-if="allArticles !== undefined" class="blog-listing-inner-wrapper row">
+    <div v-if="allArticles !== undefined"
+         class="blog-listing-inner-wrapper row">
       <div v-for="article in allArticles"
            :key="article.guid"
            class="col-12 col-md-6 article pb-5">
@@ -59,7 +60,7 @@ export default {
           .catch(err => {
             console.error('error', err);
           })
-    }
+    },
   },
   components: {},
   beforeUnmount() {

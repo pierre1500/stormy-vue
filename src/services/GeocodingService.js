@@ -1,4 +1,4 @@
-import http from "../http.common";
+import http from "../http-common";
 
 //  Service meant to manage geocoding API calls to
 //  retrieve lat/lon from a given query

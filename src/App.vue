@@ -1,6 +1,9 @@
 <template>
   <top-menu></top-menu>
-  <router-view/>
+  <div class="view-wrapper container-fluid">
+    <router-view/>
+  </div>
+  <custom-style></custom-style>
 </template>
 
 <style lang="scss">
@@ -11,14 +14,11 @@
   text-align: center;
   color: #2c3e50;
 }
-
 nav {
   padding: 30px;
-
   a {
     font-weight: bold;
     color: #2c3e50;
-
     &.router-link-exact-active {
       color: #42b983;
     }
@@ -27,7 +27,8 @@ nav {
 </style>
 <script>
 import TopMenu from "@/components/top-menu";
+import CustomStyle from "@/components/custom-style";
 export default {
-  components: {TopMenu}
+  components: {CustomStyle, TopMenu}
 }
 </script>

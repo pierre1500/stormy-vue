@@ -3,24 +3,25 @@
     <!-- form -->
     <div class="search-wrapper px-2">
       <div class="input-group mb-3">
-        <select class="custom-select bg-dark text-light"
+        <select id="inputGroupSelect01"
                 v-model="type"
-                id="inputGroupSelect01">
+                class="custom-select">
           <option value="housenumber">Numéro maison</option>
           <option selected value="street">Rue</option>
           <option value="locality">Lieu-dit</option>
           <option value="municipality">Commune</option>
         </select>
-        <input class="bg-dark text-light form-control" type="text"
-               @keyup.enter="search"
+        <input v-model="query" :aria-label="defaultPlaceholder"
                :disabled="loading"
-               v-model="query"
                :placeholder="defaultPlaceholder"
-               :aria-label="defaultPlaceholder">
+               class="form-control"
+               type="text"
+               @keyup.enter="search">
         <div class="input-group-append">
-          <button class="btn btn-dark btn-outline-light"
-                  @click="search"
-                  type="button">Button
+          <button :disabled="loading"
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  @click="search">Button
           </button>
         </div>
       </div>
@@ -32,15 +33,30 @@
         <div class="circle-loader wobble"></div>
       </div>
     </div>
+    <!-- dialog -->
+    <dialog-map v-if="coordinates_ !== null"
+                v-model="range"
+                :data="selected"
+                @new-location="addNewLocationToUser"
+    ></dialog-map>
+    <!-- map -->
+    <div v-if="coordinates_ !== null" class="map-wrapper">
+      <display-map :area-size="areaSizeCpt"
+                   :lat="coordinates_[0]"
+                   :lon="coordinates_[1]"
+                   :mode="mapMode"
+                   :zoom="zoomCpt"></display-map>
+    </div>
     <!-- results -->
     <div v-if="results !== undefined"
          class="results-wrapper">
       <div class="list-group">
-        <a href="#"
-           v-for="opt in results"
+        <a v-for="opt in results"
            :key="opt.properties.id"
-           class="list-group-item list-group-item-action flex-column align-items-start color-a">
-          <div class="d-flex w-100 justify-content-between color-result">
+           class="list-group-item list-group-item-action flex-column align-items-start"
+           href="#"
+           @click.prevent="selectOption(opt)">
+          <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">{{ opt.properties.label }}</h5>
             <small>{{ opt.properties.type }}</small>
           </div>
@@ -52,71 +68,139 @@
 </template>
 
 <script>
-
 import GeocodingService from "@/services/GeocodingService";
 import {ToastService} from "@/mixins/ToastService";
+import DisplayMap from "@/components/display-map";
+import DialogMap from "@/components/dialog-map";
+import UserService from "@/services/UserService";
 
 export default {
   name: "search-location",
   mixins: [ToastService],
   props: {},
   data() {
-
     return {
       geocoding: GeocodingService,
       query: '',
-      limit: 10,
-      autocomplete: false,
-      lastQuery:'',
-      type: 'street' ,
-      results: undefined,
+      lastQuery: '',
+      type: 'street',
+      // states
       loading: false,
-      defaultPlaceholder: 'ex: Rue des Crocodiles'
+      // placeholders
+      defaultPlaceholder: 'ex : rue des crocodiles bleu',
+      // results
+      results: undefined,
+      selected: undefined,
+      //mode: 'select', // select, validation, visualisation
+      range: 5,
     }
   },
-  watch: {
-
+  watch: {},
+  computed: {
+    userList() {
+      return this.$store.getters.getUserList;
+    },
+    currentUser() {
+      return this.$store.getters.getUser;
+    },
+    areaSizeCpt() {
+      return this.range * 500;
+    },
+    mode() {
+      if (this.selected !== undefined) {
+        return 'validation';
+      }
+      return 'select';
+    },
+    mapMode() {
+      switch (this.mode) {
+        case 'validation':
+          return 'area';
+        default:
+          return 'marker';
+      }
+    },
+    coordinates_() {
+      let coord = this?.selected?.geometry?.coordinates;
+      if (coord !== undefined && coord !== null) {
+        return coord;
+      }
+      return null;
+    },
+    selectedTypeCpt() {
+      if (this.selected?.properties?.type !== undefined) {
+        return this.selected?.properties?.type;
+      }
+      return 'street';
+    },
+    zoomCpt() {
+      let add = 0;
+      if (this.mode !== 'select') {
+        add = 5;
+      }
+      switch (this.selectedTypeCpt) {
+        case 'municipality':
+          return 3 + add;
+        case 'locality':
+        case 'housenumber':
+          return 7 + add;
+        default:
+          return 12 + add;
+      }
+    },
   },
-  computed: {},
   created() {
-
   },
   mounted() {
   },
   methods: {
-    checkQuery()
-    {
+    addNewLocationToUser(location) {
+      console.log('addNewLocationToUser', location);
+      this.currentUser.addLocation(location);
+      this.$store.commit('update_user_entity', this.currentUser);
+      UserService.storeUsersInStorage(this.userList)
+          .catch(err => {
+            console.log('error', err);
+            this.AppToast.error('Impossible de sauvegarder les données');
+          })
+      ;
+    },
+    selectOption(opt) {
+      this.selected = opt;
+    },
+    checkQuery() {
+      // query > 3 chars
+      // query !== lastQuery
       this.query = this.query.trim();
-     if (this.query.length < 3){
-       return false;
-     }
-     if (this.query === this.lastQuery){
-       return false;
-     }
-
+      if (this.query.length < 3) {
+        return false;
+      }
+      if (this.query === this.lastQuery) {
+        return false;
+      }
       return true;
     },
-    search(){
-      if(!this.checkQuery()){
-        this.AppToast.error('impossible d\'éxecuter la recherche');
+    search() {
+      if (!this.checkQuery()) {
+        this.AppToast.error('Impossible d\'éxecuter la recherche 🐒');
         return;
       }
       this.results = undefined;
+      this.selected = undefined;
       this.loading = true;
-      this.geocoding.searchLocation(this.query,this.type)
+      this.geocoding.searchLocation(this.query, this.type)
           .then(response => {
-            let tempVariable = response?.data?.features;
-            if (tempVariable !== null && tempVariable !== undefined && tempVariable.length > 0)
-            {
-              this.results = tempVariable;
-              this.lastQuery = this.query;
-              return;
+            console.log('response', response)
+            let data_ = response?.data?.features;
+            if (data_ === undefined || data_ === null || data_.length <= 0) {
+              throw new Error('no results');
             }
-            throw new Error('not meant to be here');
+            this.results = data_;
+            this.lastQuery = this.query;
           })
           .catch(err => {
             console.error('error', err);
-            this.AppToast.error('ERREUR');
+            this.AppToast.error('Une erreur est survenue, cheh !');
           })
           .finally(() => {
             this.loading = false;
@@ -124,12 +208,10 @@ export default {
       ;
     }
   },
-  components: {},
+  components: {DialogMap, DisplayMap},
   beforeUnmount() {
   }
 }
 </script>
-
 <style scoped>
-
 </style>
